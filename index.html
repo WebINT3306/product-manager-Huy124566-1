@@ -5,92 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Sản phẩm</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
-            background-color: #f8f9fa;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-        th:hover {
-            background-color: #45a049;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        tr:hover {
-            background-color: #e9f5e9;
-        }
-        .form-container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 12px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #btn-add {
-            width: 100%;
-            margin-top: 10px;
-        }
-        .sort-icon {
-            margin-left: 5px;
-        }
-        .message {
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 4px;
-            text-align: center;
-        }
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f8f9fa; }
+        h1 { text-align: center; color: #333; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #4CAF50; color: white; cursor: pointer; }
+        th:hover { background-color: #45a049; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        tr:hover { background-color: #e9f5e9; }
+        .form-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { padding: 12px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        #btn-add { width: 100%; margin-top: 10px; }
+        .sort-icon { margin-left: 5px; }
+        .message { margin-top: 10px; padding: 10px; border-radius: 4px; text-align: center; }
     </style>
 </head>
 <body>
@@ -105,7 +36,7 @@
             </div>
             <div class="form-group">
                 <label for="input-category">Danh mục</label>
-                <input type="text" id="input-category" placeholder="Nhập danh mục (tùy chọn)">
+                <input type="text" id="input-category" placeholder="Nhập danh mục">
             </div>
             <div class="form-group">
                 <label for="input-price">Đơn giá</label>
@@ -152,7 +83,7 @@
                     <td>${index + 1}</td>
                     <td>${product.name}</td>
                     <td>${product.category || ''}</td>
-                    <td>${product.price.toLocaleString('vi-VN')} đ</td>
+                    <td>${Number(product.price).toLocaleString('vi-VN')} đ</td>
                     <td>${product.quantity}</td>
                 `;
                 productBody.appendChild(row);
@@ -169,10 +100,13 @@
         function addProduct() {
             const name = document.getElementById('input-name').value.trim();
             const category = document.getElementById('input-category').value.trim();
-            const price = parseFloat(document.getElementById('input-price').value);
-            const quantity = parseInt(document.getElementById('input-quantity').value);
+            const priceStr = document.getElementById('input-price').value;
+            const quantityStr = document.getElementById('input-quantity').value;
 
-            if (name === '' || name.length < 3) {
+            const price = parseFloat(priceStr);
+            const quantity = parseInt(quantityStr);
+
+            if (name.length < 3) {
                 showMessage("Tên sản phẩm phải có ít nhất 3 ký tự!", "red");
                 return;
             }
@@ -186,7 +120,7 @@
             }
 
             const newProduct = {
-                id: products.length + 1,
+                id: Date.now(),
                 name: name,
                 category: category,
                 price: price,
@@ -211,7 +145,7 @@
             setTimeout(() => {
                 messageDiv.textContent = '';
                 messageDiv.style.backgroundColor = '';
-            }, 3000);
+            }, 2500);
         }
 
         function loadProducts() {
@@ -226,12 +160,12 @@
             xhr.send();
         }
 
+        // Sự kiện
         nameHeader.addEventListener('click', sortByName);
         btnAdd.addEventListener('click', addProduct);
 
-        window.onload = function() {
-            loadProducts();
-        };
+        // Load dữ liệu khi trang sẵn sàng
+        window.addEventListener('load', loadProducts);
     </script>
 </body>
 </html>
