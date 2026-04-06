@@ -69,16 +69,15 @@
         let products = [];
         let sortDirection = 1;
 
-        // Lấy các element
         const productBody = document.getElementById('product-body');
         const nameHeader = document.getElementById('name-header');
         const sortIcon = document.getElementById('sort-icon');
         const btnAdd = document.getElementById('btn-add');
         const messageDiv = document.getElementById('message');
 
-        function renderTable(data) {
+        function renderTable() {
             productBody.innerHTML = '';
-            data.forEach((product, index) => {
+            products.forEach((product, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${index + 1}</td>
@@ -95,7 +94,7 @@
             sortDirection = -sortDirection;
             products.sort((a, b) => a.name.localeCompare(b.name) * sortDirection);
             sortIcon.textContent = sortDirection > 0 ? '▲' : '▼';
-            renderTable(products);
+            renderTable();
         }
 
         function addProduct() {
@@ -125,9 +124,8 @@
                 quantity: quantity
             });
 
-            renderTable(products);
+            renderTable();
 
-            // Reset form
             document.getElementById('input-name').value = '';
             document.getElementById('input-category').value = '';
             document.getElementById('input-price').value = '';
@@ -139,27 +137,24 @@
         function showMessage(msg, color) {
             messageDiv.textContent = msg;
             messageDiv.style.color = color;
-            setTimeout(() => messageDiv.textContent = '', 3000);
+            setTimeout(() => { messageDiv.textContent = ''; }, 2500);
         }
 
-        // Load dữ liệu
         function loadProducts() {
             const xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     products = JSON.parse(xhr.responseText);
-                    renderTable(products);
+                    renderTable();
                 }
             };
-            xhr.open("GET", "products.json", true);
+            xhr.open('GET', 'products.json', true);
             xhr.send();
         }
 
-        // Gắn sự kiện
-        nameHeader.addEventListener("click", sortByName);
-        btnAdd.addEventListener("click", addProduct);
+        nameHeader.addEventListener('click', sortByName);
+        btnAdd.addEventListener('click', addProduct);
 
-        // Khởi chạy load dữ liệu
         loadProducts();
     </script>
 </body>
