@@ -32,19 +32,19 @@
             <h2>Thêm sản phẩm mới</h2>
             <div class="form-group">
                 <label for="input-name">Tên sản phẩm</label>
-                <input type="text" id="input-name" placeholder="Nhập tên sản phẩm">
+                <input type="text" id="input-name">
             </div>
             <div class="form-group">
                 <label for="input-category">Danh mục</label>
-                <input type="text" id="input-category" placeholder="Nhập danh mục">
+                <input type="text" id="input-category">
             </div>
             <div class="form-group">
                 <label for="input-price">Đơn giá</label>
-                <input type="number" id="input-price" placeholder="Nhập đơn giá" min="0">
+                <input type="number" id="input-price" min="0">
             </div>
             <div class="form-group">
                 <label for="input-quantity">Số lượng</label>
-                <input type="number" id="input-quantity" placeholder="Nhập số lượng" min="1">
+                <input type="number" id="input-quantity" min="1">
             </div>
             <button id="btn-add">Thêm sản phẩm</button>
             <div id="message" class="message"></div>
@@ -69,6 +69,7 @@
         let products = [];
         let sortDirection = 1;
 
+        // Lấy các element
         const productBody = document.getElementById('product-body');
         const nameHeader = document.getElementById('name-header');
         const sortIcon = document.getElementById('sort-icon');
@@ -78,33 +79,30 @@
         function renderTable(data) {
             productBody.innerHTML = '';
             data.forEach((product, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
                     <td>${index + 1}</td>
                     <td>${product.name}</td>
                     <td>${product.category || ''}</td>
                     <td>${Number(product.price).toLocaleString('vi-VN')} đ</td>
                     <td>${product.quantity}</td>
                 `;
-                productBody.appendChild(row);
+                productBody.appendChild(tr);
             });
         }
 
         function sortByName() {
-            sortDirection *= -1;
+            sortDirection = -sortDirection;
             products.sort((a, b) => a.name.localeCompare(b.name) * sortDirection);
-            sortIcon.textContent = sortDirection === 1 ? '▲' : '▼';
+            sortIcon.textContent = sortDirection > 0 ? '▲' : '▼';
             renderTable(products);
         }
 
         function addProduct() {
             const name = document.getElementById('input-name').value.trim();
             const category = document.getElementById('input-category').value.trim();
-            const priceStr = document.getElementById('input-price').value;
-            const quantityStr = document.getElementById('input-quantity').value;
-
-            const price = parseFloat(priceStr);
-            const quantity = parseInt(quantityStr);
+            const price = parseFloat(document.getElementById('input-price').value);
+            const quantity = parseInt(document.getElementById('input-quantity').value);
 
             if (name.length < 3) {
                 showMessage("Tên sản phẩm phải có ít nhất 3 ký tự!", "red");
@@ -119,17 +117,17 @@
                 return;
             }
 
-            const newProduct = {
+            products.push({
                 id: Date.now(),
                 name: name,
                 category: category,
                 price: price,
                 quantity: quantity
-            };
+            });
 
-            products.push(newProduct);
             renderTable(products);
 
+            // Reset form
             document.getElementById('input-name').value = '';
             document.getElementById('input-category').value = '';
             document.getElementById('input-price').value = '';
@@ -138,16 +136,13 @@
             showMessage("Thêm sản phẩm thành công!", "green");
         }
 
-        function showMessage(text, color) {
-            messageDiv.textContent = text;
+        function showMessage(msg, color) {
+            messageDiv.textContent = msg;
             messageDiv.style.color = color;
-            messageDiv.style.backgroundColor = color === "green" ? "#d4edda" : "#f8d7da";
-            setTimeout(() => {
-                messageDiv.textContent = '';
-                messageDiv.style.backgroundColor = '';
-            }, 2500);
+            setTimeout(() => messageDiv.textContent = '', 3000);
         }
 
+        // Load dữ liệu
         function loadProducts() {
             const xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
@@ -156,16 +151,16 @@
                     renderTable(products);
                 }
             };
-            xhr.open('GET', 'products.json', true);
+            xhr.open("GET", "products.json", true);
             xhr.send();
         }
 
-        // Sự kiện
-        nameHeader.addEventListener('click', sortByName);
-        btnAdd.addEventListener('click', addProduct);
+        // Gắn sự kiện
+        nameHeader.addEventListener("click", sortByName);
+        btnAdd.addEventListener("click", addProduct);
 
-        // Load dữ liệu khi trang sẵn sàng
-        window.addEventListener('load', loadProducts);
+        // Khởi chạy load dữ liệu
+        loadProducts();
     </script>
 </body>
 </html>
